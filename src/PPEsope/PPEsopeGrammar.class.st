@@ -1,6 +1,6 @@
 Class {
 	#name : #PPEsopeGrammar,
-	#superclass : #PP2CompositeNode,
+	#superclass : #PPCompositeParser,
 	#instVars : [
 		'file',
 		'include',
@@ -32,120 +32,124 @@ PPEsopeGrammar class >> getSourceFromFile: filename [
 	^ filename asFileReference contents asText
 ]
 
-{ #category : #accessing }
+{ #category : #tokens }
 PPEsopeGrammar >> beginOfLine [
-	^ '      ' asPParser token
+	^ '      ' asParser token
 ]
 
-{ #category : #accessing }
+{ #category : #tokens }
 PPEsopeGrammar >> comma [
-	^ $, asPParser
+	^ $, asParser
 ]
 
-{ #category : #accessing }
+{ #category : #grammar }
 PPEsopeGrammar >> emptyLine [
-
 	^ spaces , endOfLine
 ]
 
-{ #category : #accessing }
+{ #category : #tokens }
 PPEsopeGrammar >> endOfLine [
-	^ (Character cr asPParser / Character lf asPParser)  plus
+	^ (Character cr asParser / Character lf asParser)  plus
 ]
 
-{ #category : #accessing }
+{ #category : #'grammar-helper' }
+PPEsopeGrammar >> esopeLine: esopeKeyword [
+	^ beginOfLine , spaces, esopeKeyword asParser, segIdentifier, endOfLine
+]
+
+{ #category : #tokens }
 PPEsopeGrammar >> file [
 
 	^ (segact / segadj / segdef / segdes / segini / segsup / pointer
 	   / include / fortranLine / emptyLine) plus
 ]
 
-{ #category : #accessing }
+{ #category : #grammar }
 PPEsopeGrammar >> fortranLine [
 	^ (endOfLine negate plus) token optional, endOfLine
 ]
 
-{ #category : #accessing }
+{ #category : #tokens }
 PPEsopeGrammar >> identifier [
-	^ #letter asPParser , #word asPParser star.
+	^ #letter asParser , #word asParser star.
 ]
 
-{ #category : #accessing }
+{ #category : #grammar }
 PPEsopeGrammar >> include [
-	^ '#include' asPParser, spaces, includeName, endOfLine
+	^ '#include' asParser, spaces, includeName, endOfLine
 ]
 
-{ #category : #accessing }
+{ #category : #grammar }
 PPEsopeGrammar >> includeName [
-	^ ($" asPParser / $< asPParser), (identifier, $. asPParser, identifier) token, ($" asPParser  / $>  asPParser)
+	^ ($" asParser / $< asParser), (identifier, $. asParser, identifier) token, ($" asParser  / $>  asParser)
 ]
 
-{ #category : #accessing }
+{ #category : #grammar }
 PPEsopeGrammar >> lines [
 	^ notEndLine star 
 ]
 
-{ #category : #accessing }
+{ #category : #grammar }
 PPEsopeGrammar >> notEndLine [
-	^ beginOfLine, 'end' asPParser not, endOfLine negate plus, endOfLine
+	^ beginOfLine, 'end' asParser not, endOfLine negate plus, endOfLine
 ]
 
-{ #category : #accessing }
+{ #category : #grammar }
 PPEsopeGrammar >> pointer [
-	^ beginOfLine, 'pointeur' asPParser, spaces, pointerName, endOfLine
+	^ beginOfLine, 'pointeur' asParser, spaces, pointerName, endOfLine
 ]
 
-{ #category : #accessing }
+{ #category : #grammar }
 PPEsopeGrammar >> pointerName [
-	^ identifier, $. asPParser, identifier
+	^ identifier, $. asParser, identifier
 ]
 
-{ #category : #accessing }
+{ #category : #tokens }
 PPEsopeGrammar >> rpar [
-	^ $) asPParser 
+	^ $) asParser 
 ]
 
-{ #category : #accessing }
+{ #category : #grammar }
 PPEsopeGrammar >> segIdentifier [
 	^ endOfLine negate plus
 ]
 
-{ #category : #accessing }
+{ #category : #grammar }
 PPEsopeGrammar >> segact [
-	^ beginOfLine, spaces, 'segact' asPParser, segIdentifier, endOfLine
+	^ self esopeLine: 'segact'
 ]
 
-{ #category : #accessing }
+{ #category : #grammar }
 PPEsopeGrammar >> segadj [
-	^ beginOfLine, spaces, 'segadj' asPParser, segIdentifier, endOfLine
+	^ self esopeLine: 'segadj'
 ]
 
-{ #category : #accessing }
+{ #category : #grammar }
 PPEsopeGrammar >> segdef [
 
-	^ beginOfLine, spaces, 'segment' asPParser, segIdentifier, endOfLine,
+	^ (self esopeLine: 'segment') ,
 	lines,
-	beginOfLine, spaces, 'end' asPParser , spaces, 'segment' asPParser, endOfLine
+	beginOfLine, spaces, 'end' asParser , spaces, 'segment' asParser, endOfLine
 ]
 
-{ #category : #accessing }
+{ #category : #grammar }
 PPEsopeGrammar >> segdes [
-	^ beginOfLine, spaces, 'segdes' asPParser, segIdentifier, endOfLine
+	^ self esopeLine: 'segdes'
 ]
 
-{ #category : #accessing }
+{ #category : #grammar }
 PPEsopeGrammar >> segini [
-	^ beginOfLine, spaces, 'segini' asPParser, segIdentifier, endOfLine
+	^ self esopeLine: 'segini'
 ]
 
-{ #category : #accessing }
+{ #category : #grammar }
 PPEsopeGrammar >> segsup [
-	^ beginOfLine , spaces, 'segsup' asPParser, segIdentifier, endOfLine
+	^ self esopeLine: 'segsup'
 ]
 
-{ #category : #accessing }
+{ #category : #tokens }
 PPEsopeGrammar >> spaces [
-	^ #space asPParser star
+	^ (#blank asParser / #tab asParser) star
 ]
 
 { #category : #accessing }

@@ -1,6 +1,6 @@
 Class {
 	#name : #PPEsopeRewriterTest,
-	#superclass : #PP2CompositeNodeTest,
+	#superclass : #PPCompositeParserTest,
 	#category : #'PPEsope-Tests'
 }
 

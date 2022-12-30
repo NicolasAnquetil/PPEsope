@@ -20,13 +20,13 @@ PPEsopeFullGrammarTest >> setUp [
 
 { #category : #running }
 PPEsopeFullGrammarTest >> testBigFile [
-	self deny: (parser parse: PPEsopeGrammarTest esopeBigFile) isPetit2Failure 
+	self deny: (parser parse: PPEsopeGrammarTest esopeBigFile) isPetitFailure 
 ]
 
 { #category : #running }
 PPEsopeFullGrammarTest >> testEmptyFile [
 	self deny: (parser parse: '
-') isPetit2Failure 
+') isPetitFailure 
 ]
 
 { #category : #running }
@@ -39,7 +39,7 @@ c     == sorties ==
       pointeur alist.list
       return
       end
-') isPetit2Failure 
+') isPetitFailure 
 ]
 
 { #category : #running }
@@ -52,7 +52,7 @@ c     == sorties ==
       segact,splist
       return
       end
-') isPetit2Failure 
+') isPetitFailure 
 ]
 
 { #category : #running }
@@ -66,7 +66,7 @@ c     == sorties ==
 
       return
       end
-') isPetit2Failure 
+') isPetitFailure 
 ]
 
 { #category : #running }
@@ -80,7 +80,7 @@ c     == sorties ==
 
       return
       end
-') isPetit2Failure 
+') isPetitFailure 
 ]
 
 { #category : #running }
@@ -94,7 +94,7 @@ c     == sorties ==
 
       return
       end
-') isPetit2Failure 
+') isPetitFailure 
 ]
 
 { #category : #running }
@@ -106,10 +106,10 @@ c     == sorties ==
      & rlist,status)
       return
       end
-') isPetit2Failure 
+') isPetitFailure 
 ]
 
 { #category : #running }
 PPEsopeFullGrammarTest >> testSmallFile [
-	self deny: (parser parse: PPEsopeGrammarTest esopeSmallFile) isPetit2Failure 
+	self deny: (parser parse: PPEsopeGrammarTest esopeSmallFile) isPetitFailure 
 ]

@@ -1,6 +1,6 @@
 Class {
 	#name : #PPEsopeGrammarTest,
-	#superclass : #PP2CompositeNodeTest,
+	#superclass : #PPCompositeParserTest,
 	#category : #'PPEsope-Tests'
 }
 
@@ -766,9 +766,32 @@ PPEsopeGrammarTest >> testBigFile [
 PPEsopeGrammarTest >> testEmptyLine [
 
 	self
-		parse: '       
-'
+		parse: ('       ' , String cr)
 		rule: #emptyLine
+]
+
+{ #category : #tests }
+PPEsopeGrammarTest >> testEndOfLineCr [
+
+	self
+		parse: String cr
+		rule: #endOfLine
+]
+
+{ #category : #tests }
+PPEsopeGrammarTest >> testEndOfLineCrLf [
+
+	self
+		parse: String crlf
+		rule: #endOfLine
+]
+
+{ #category : #tests }
+PPEsopeGrammarTest >> testEndOfLineLf [
+
+	self
+		parse: String lf
+		rule: #endOfLine
 ]
 
 { #category : #tests }
@@ -787,6 +810,7 @@ PPEsopeGrammarTest >> testFortranLineEmpty [
 PPEsopeGrammarTest >> testInclude [
 	self parse: '#include <implicit.h>
 ' rule: #include.
+
 	self parse: '#include "string.seg"
 ' rule: #include.
 	
@@ -823,7 +847,7 @@ PPEsopeGrammarTest >> testSegadj [
 PPEsopeGrammarTest >> testSegadjVcAcc226 [
 
 	self
-		parse: '	segadj,pval
+		parse: '      segadj,pval
 '
 		rule: #segadj.
 	self fail: 'segadj,pval' rule: #segadj
@@ -879,6 +903,14 @@ PPEsopeGrammarTest >> testSegsup [
 { #category : #tests }
 PPEsopeGrammarTest >> testSmallFile [
 	self parse: self class esopeSmallFile rule: #file
+]
+
+{ #category : #tests }
+PPEsopeGrammarTest >> testSpaces [
+
+	self
+		parse: '       '
+		rule: #spaces
 ]
 
 { #category : #tests }
