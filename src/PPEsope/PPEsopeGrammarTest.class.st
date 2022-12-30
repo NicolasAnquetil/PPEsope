@@ -807,6 +807,8 @@ PPEsopeGrammarTest >> testFortranLine [
 	self parse: sixSpaces, 'subroutine test(brr)
 ' rule: #fortranLine.
 
+	self parse: String cr rule: #fortranLine.
+
 ]
 
 { #category : #tests }
@@ -823,8 +825,8 @@ PPEsopeGrammarTest >> testInclude [
 	self parse: '#include "string.seg"
 ' rule: #include.
 	
-	self fail: '#include >implicit.h<' rule: #include.
-	self fail: '#include ''string.seg''' rule: #include.
+	self fail: '#include "implicit.h>
+' rule: #include.
 ]
 
 { #category : #tests }
@@ -961,6 +963,11 @@ PPEsopeGrammarTest >> testSpaces [
 
 	self
 		parse: '     '
+		rule: #spaces.
+	
+
+	self
+		parse: ''
 		rule: #spaces
 ]
 

@@ -41,16 +41,8 @@ PPEsopeRewriter class >> rewriteFrom: esopeFile to: annotatedFile [
 ]
 
 { #category : #utilities }
-PPEsopeRewriter >> copyLine: nodes from: start to: end [
-	start to: end do: [ :i | stream << (nodes at: i) value ]
-]
-
-{ #category : #accessing }
-PPEsopeRewriter >> endOfLine [
-	"(Character cr asPParser / Character lf asPParser)  plus"
-	
-	^ super endOfLine
-	==> [ :nodes | String streamContents: [ :str | nodes do: [ :c | str nextPut: c ] ] ]
+PPEsopeRewriter >> copyTokens: nodes from: start to: end [
+	start to: end do: [ :i | stream << (nodes at: i) ]
 ]
 
 { #category : #grammar }
@@ -62,7 +54,7 @@ PPEsopeRewriter >> fortranLine [
 			| line |
 			line := ''
 				writeStreamDo: [ :str | 
-					nodes do: [ :node | str << node parsedValue ].
+					nodes do: [ :node | str << node value ].
 					str contents ].
 			(line asLowercase beginsWith: 'c')
 				ifTrue: [ stream << line ]
@@ -121,7 +113,7 @@ PPEsopeRewriter >> pointer [
 
 	^ super pointer
 		==> [ :nodes | stream << 'cESO  '.
-				self copyLine: nodes from: 2 to: nodes size
+				self copyTokens: nodes from: 2 to: nodes size
 			]
 ]
 
@@ -130,7 +122,7 @@ PPEsopeRewriter >> processLinesInsideSegment: anOrderedCollection [
 	"  (beginOfLine, 'end' asPParser not, endOfLine negate plus, endOfLine) star"
 	anOrderedCollection do: [ :line |
 			stream << 'cESO  '.
-			self copyLine: line from: 3 to: 4
+			self copyTokens: line from: 3 to: 4
 		 ]
 ]
 
@@ -140,7 +132,7 @@ PPEsopeRewriter >> segact [
 
 	^ super segact
 		==> [ :nodes | stream << 'cESO  '.
-				self copyLine: nodes from: 2 to: nodes size
+				self copyTokens: nodes from: 2 to: nodes size
 			]
 ]
 
@@ -150,7 +142,7 @@ PPEsopeRewriter >> segadj [
 
 	^ super segadj
 		==> [ :nodes | stream << 'cESO  '.
-				self copyLine: nodes from: 2 to: nodes size
+				self copyTokens: nodes from: 2 to: nodes size
 			]
 ]
 
@@ -163,10 +155,10 @@ PPEsopeRewriter >> segdef [
 	^ super segdef
 	==> [ :nodes |
 		stream << 'cESO  '.
-		self copyLine: nodes from: 2 to: 5.
+		self copyTokens: nodes from: 2 to: 5.
 		self processLinesInsideSegment: (nodes at: 6).
 		stream << 'cESO  '.
-		self copyLine: nodes from: 8  to: 12
+		self copyTokens: nodes from: 8  to: 12
 		]
 ]
 
@@ -176,7 +168,7 @@ PPEsopeRewriter >> segdes [
 
 	^ super segdes
 		==> [ :nodes | stream << 'cESO  '.
-				self copyLine: nodes from: 2 to: nodes size
+				self copyTokens: nodes from: 2 to: nodes size
 			]
 ]
 
@@ -186,7 +178,7 @@ PPEsopeRewriter >> segini [
 
 	^ super segini
 		==> [ :nodes | stream << 'cESO  '.
-				self copyLine: nodes from: 2 to: nodes size
+				self copyTokens: nodes from: 2 to: nodes size
 			]
 ]
 
@@ -196,8 +188,16 @@ PPEsopeRewriter >> segsup [
 
 	^ super segsup
 		==> [ :nodes | stream << 'cESO  '.
-				self copyLine: nodes from: 2 to: nodes size
+				self copyTokens: nodes from: 2 to: nodes size
 			]
+]
+
+{ #category : #grammar }
+PPEsopeRewriter >> spaces [
+	^super spaces
+	==> [ :nodes |
+		nodes ifNil: [ '' token ] ifNotNil: [ :tk | tk ]
+		]
 ]
 
 { #category : #utilities }

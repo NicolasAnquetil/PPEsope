@@ -21,7 +21,10 @@ Class {
 		'beginOfLine',
 		'segIdentifier',
 		'fortranLine',
-		'emptyLine'
+		'emptyLine',
+		'pointerKeyword',
+		'endToken',
+		'segmentToken'
 	],
 	#category : #'PPEsope-Parser'
 }
@@ -33,7 +36,7 @@ PPEsopeGrammar class >> getSourceFromFile: filename [
 
 { #category : #tokens }
 PPEsopeGrammar >> beginOfLine [
-	^ '      ' asParser token
+	^ '      ' asParser flatten
 ]
 
 { #category : #grammar }
@@ -43,15 +46,20 @@ PPEsopeGrammar >> emptyLine [
 
 { #category : #tokens }
 PPEsopeGrammar >> endOfLine [
-	^ (Character cr asParser / Character lf asParser)  plus
+	^ (Character cr asParser / Character lf asParser)  plus flatten
+]
+
+{ #category : #tokens }
+PPEsopeGrammar >> endToken [
+	^'end' asParser flatten
 ]
 
 { #category : #'grammar-helper' }
 PPEsopeGrammar >> esopeLine: esopeKeyword [
-	^ beginOfLine , spaces, esopeKeyword asParser , segIdentifier, endOfLine
+	^ beginOfLine , spaces, esopeKeyword asParser flatten , segIdentifier, endOfLine
 ]
 
-{ #category : #tokens }
+{ #category : #grammar }
 PPEsopeGrammar >> file [
 
 	^ (segact / segadj / segdef / segdes / segini / segsup / pointer
@@ -60,22 +68,23 @@ PPEsopeGrammar >> file [
 
 { #category : #grammar }
 PPEsopeGrammar >> fortranLine [
-	^ (endOfLine negate plus) token optional, endOfLine
+	^ (endOfLine negate star flatten) , endOfLine
 ]
 
 { #category : #tokens }
 PPEsopeGrammar >> identifier [
-	^ #letter asParser , #word asParser star.
+	^ (#letter asParser , #word asParser star) flatten.
 ]
 
 { #category : #grammar }
 PPEsopeGrammar >> include [
-	^ '#include' asParser, spaces, includeName, endOfLine
+	^ '#include' asParser flatten, spaces, includeName, endOfLine
 ]
 
 { #category : #grammar }
 PPEsopeGrammar >> includeName [
-	^ ($" asParser / $< asParser), (identifier, $. asParser, identifier) token, ($" asParser  / $>  asParser)
+	^ ($" asParser, identifier, $. asParser, identifier , $"  asParser) flatten /
+	($< asParser, identifier, $. asParser, identifier , $>  asParser) flatten
 ]
 
 { #category : #grammar }
@@ -86,22 +95,27 @@ PPEsopeGrammar >> lines [
 { #category : #grammar }
 PPEsopeGrammar >> notEndLine [
 	" A line not starting with ' end' (so not an 'end <something>' line)"
-	^ beginOfLine, 'end' asParser not, endOfLine negate plus, endOfLine
+	^ beginOfLine, 'end' asParser not, endOfLine negate plus flatten, endOfLine
 ]
 
 { #category : #grammar }
 PPEsopeGrammar >> pointer [
-	^ beginOfLine, 'pointeur' asParser, spaces, pointerName, endOfLine
+	^ beginOfLine, pointerKeyword , spaces, pointerName, endOfLine
 ]
 
-{ #category : #grammar }
+{ #category : #tokens }
+PPEsopeGrammar >> pointerKeyword [
+	^'pointeur' asParser flatten
+]
+
+{ #category : #tokens }
 PPEsopeGrammar >> pointerName [
-	^ identifier, $. asParser, identifier
+	^ (identifier, $. asParser, identifier) flatten
 ]
 
-{ #category : #grammar }
+{ #category : #tokens }
 PPEsopeGrammar >> segIdentifier [
-	^ endOfLine negate plus
+	^ endOfLine negate plus flatten
 ]
 
 { #category : #grammar }
@@ -120,7 +134,7 @@ PPEsopeGrammar >> segdef [
 
 	^ (self esopeLine: 'segment') ,
 	lines,
-	beginOfLine, spaces, 'end' asParser , spaces, 'segment' asParser, endOfLine
+	beginOfLine, spaces, endToken , spaces, segmentToken , endOfLine
 ]
 
 { #category : #grammar }
@@ -133,6 +147,11 @@ PPEsopeGrammar >> segini [
 	^ self esopeLine: 'segini'
 ]
 
+{ #category : #tokens }
+PPEsopeGrammar >> segmentToken [
+	^'segment' asParser flatten
+]
+
 { #category : #grammar }
 PPEsopeGrammar >> segsup [
 	^ self esopeLine: 'segsup'
@@ -140,7 +159,7 @@ PPEsopeGrammar >> segsup [
 
 { #category : #tokens }
 PPEsopeGrammar >> spaces [
-	^ (#blank asParser / #tab asParser) star
+	^ (#blank asParser / #tab asParser) star flatten
 ]
 
 { #category : #accessing }
