@@ -2,7 +2,8 @@ Class {
 	#name : #PPEsopeFullGrammarTest,
 	#superclass : #TestCase,
 	#instVars : [
-		'parser'
+		'parser',
+		'sixSpaces'
 	],
 	#category : #'PPEsope-Tests'
 }
@@ -15,6 +16,7 @@ PPEsopeFullGrammarTest >> parserClass [
 { #category : #running }
 PPEsopeFullGrammarTest >> setUp [
 	super setUp.
+	sixSpaces := '      '.
 	parser := self parserClass new
 ]
 

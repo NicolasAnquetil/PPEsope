@@ -1,6 +1,6 @@
 Class {
 	#name : #PPFortranGrammar,
-	#superclass : #PP2CompositeNode,
+	#superclass : #PPCompositeParser,
 	#instVars : [
 		'actionStmt',
 		'arithmeticIfStmt',

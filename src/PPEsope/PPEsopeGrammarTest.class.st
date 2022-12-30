@@ -1,6 +1,9 @@
 Class {
 	#name : #PPEsopeGrammarTest,
 	#superclass : #PPCompositeParserTest,
+	#instVars : [
+		'sixSpaces'
+	],
 	#category : #'PPEsope-Tests'
 }
 
@@ -757,38 +760,43 @@ PPEsopeGrammarTest >> parserClass [
 	^ PPEsopeGrammar
 ]
 
+{ #category : #running }
+PPEsopeGrammarTest >> setUp [
+	super setUp.
+	sixSpaces := '      '.
+	 
+]
+
 { #category : #tests }
 PPEsopeGrammarTest >> testBigFile [
-	self parse: self class esopeBigFile rule: #file
+	"#file is the default rule"
+	self parse: self class esopeBigFile
 ]
 
 { #category : #tests }
 PPEsopeGrammarTest >> testEmptyLine [
 
 	self
-		parse: ('       ' , String cr)
-		rule: #emptyLine
+		parse: String cr
+		rule: #emptyLine.
+
+	self
+		parse: (sixSpaces, String cr)
+		rule: #emptyLine.
+
 ]
 
 { #category : #tests }
-PPEsopeGrammarTest >> testEndOfLineCr [
+PPEsopeGrammarTest >> testEndOfLine [
 
 	self
 		parse: String cr
-		rule: #endOfLine
-]
-
-{ #category : #tests }
-PPEsopeGrammarTest >> testEndOfLineCrLf [
-
+		rule: #endOfLine.
+		
 	self
 		parse: String crlf
-		rule: #endOfLine
-]
-
-{ #category : #tests }
-PPEsopeGrammarTest >> testEndOfLineLf [
-
+		rule: #endOfLine.
+		
 	self
 		parse: String lf
 		rule: #endOfLine
@@ -796,8 +804,11 @@ PPEsopeGrammarTest >> testEndOfLineLf [
 
 { #category : #tests }
 PPEsopeGrammarTest >> testFortranLine [
-	self parse: '      subroutine test(brr)
+	self parse: sixSpaces, 'subroutine test(brr)
 ' rule: #fortranLine.
+
+	self parse: String cr rule: #fortranLine.
+
 ]
 
 { #category : #tests }
@@ -814,31 +825,72 @@ PPEsopeGrammarTest >> testInclude [
 	self parse: '#include "string.seg"
 ' rule: #include.
 	
-	self fail: '#include >implicit.h<' rule: #include.
-	self fail: '#include ''string.seg''' rule: #include.
+	self fail: '#include "implicit.h>
+' rule: #include.
+]
+
+{ #category : #tests }
+PPEsopeGrammarTest >> testLines [
+	|aLine|
+	
+	aLine := (sixSpaces , 'abc', String cr).
+	 
+	self 
+		parse: ''
+		rule: #lines.
+	
+	self
+		parse: aLine 
+		rule: #lines.
+
+	self
+		parse: aLine , aLine , aLine
+		rule: #lines.		
+				
+	self
+		fail: aLine , (sixSpaces , 'end' , String cr)
+		rule: #lines.
+		
+	
+	
+]
+
+{ #category : #tests }
+PPEsopeGrammarTest >> testNotEndLine [
+	self
+		parse: (sixSpaces , 'abc', String cr) 
+		rule: #notEndLine.
+
+	self 
+		fail: (sixSpaces , 'end', String cr) 
+		rule: #notEndLine.
+		 
 ]
 
 { #category : #tests }
 PPEsopeGrammarTest >> testPointer [
-	self parse: '      pointeur splist.list
+	self parse: sixSpaces, 'pointeur splist.list
 ' rule: #pointer.
 	self fail: 'pointeur splist.list' rule: #pointer.
 ]
 
 { #category : #tests }
 PPEsopeGrammarTest >> testSegact [
-	self parse: '      segact,splist
-' rule: #segact.
-	self parse: '      segact,pv1
-' rule: #segact.
-	self parse: '        segact,xs
-' rule: #segact.
-	self fail: 'segact,splist' rule: #segact.
+	self
+		parse: (sixSpaces , 'segact,splist' , String cr)
+		rule: #segact.
+	self
+		parse: (sixSpaces , 'segact,pv1' , String cr)
+		rule: #segact.
+	self
+		parse: (sixSpaces , '  segact,xs' , String cr)
+		rule: #segact.
+	self fail: ('segact,splist' , String cr) rule: #segact.
 ]
 
 { #category : #tests }
 PPEsopeGrammarTest >> testSegadj [
-	self parse: '      segadj,alist
+	self parse: sixSpaces, 'segadj,alist
 ' rule: #segadj.
 	self fail: 'segadj,alist' rule: #segadj.
 ]
@@ -879,37 +931,43 @@ PPEsopeGrammarTest >> testSegdef [
 
 { #category : #tests }
 PPEsopeGrammarTest >> testSegdes [
-	self parse: '      segdes,alist
+	self parse: sixSpaces, 'segdes,alist
 ' rule: #segdes.
-	self parse: '        segdes,pshp1*NOMOD
+	self parse: sixSpaces, '  segdes,pshp1*NOMOD
 ' rule: #segdes.
 	self fail: 'segdes,alist' rule: #segdes.
 ]
 
 { #category : #tests }
 PPEsopeGrammarTest >> testSegini [
-	self parse: '      segini,rlist
+	self parse: sixSpaces, 'segini,rlist
 ' rule: #segini.
 	self fail: 'segini,rlist' rule: #segini.
 ]
 
 { #category : #tests }
 PPEsopeGrammarTest >> testSegsup [
-	self parse: '      segsup,rlist
+	self parse: sixSpaces, 'segsup,rlist
 ' rule: #segsup.
 	self fail: 'segsup,rlist' rule: #segsup.
 ]
 
 { #category : #tests }
 PPEsopeGrammarTest >> testSmallFile [
-	self parse: self class esopeSmallFile rule: #file
+	"#file is the default rule"
+	self parse: self class esopeSmallFile
 ]
 
 { #category : #tests }
 PPEsopeGrammarTest >> testSpaces [
 
 	self
-		parse: '       '
+		parse: '     '
+		rule: #spaces.
+	
+
+	self
+		parse: ''
 		rule: #spaces
 ]
 
