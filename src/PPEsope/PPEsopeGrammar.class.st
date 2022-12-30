@@ -17,7 +17,6 @@ Class {
 		'notEndLine',
 		'lines',
 		'identifier',
-		'comma',
 		'endOfLine',
 		'beginOfLine',
 		'segIdentifier',
@@ -37,11 +36,6 @@ PPEsopeGrammar >> beginOfLine [
 	^ '      ' asParser token
 ]
 
-{ #category : #tokens }
-PPEsopeGrammar >> comma [
-	^ $, asParser
-]
-
 { #category : #grammar }
 PPEsopeGrammar >> emptyLine [
 	^ spaces , endOfLine
@@ -54,7 +48,7 @@ PPEsopeGrammar >> endOfLine [
 
 { #category : #'grammar-helper' }
 PPEsopeGrammar >> esopeLine: esopeKeyword [
-	^ beginOfLine , spaces, esopeKeyword asParser, segIdentifier, endOfLine
+	^ beginOfLine , spaces, esopeKeyword asParser , segIdentifier, endOfLine
 ]
 
 { #category : #tokens }
@@ -91,6 +85,7 @@ PPEsopeGrammar >> lines [
 
 { #category : #grammar }
 PPEsopeGrammar >> notEndLine [
+	" A line not starting with ' end' (so not an 'end <something>' line)"
 	^ beginOfLine, 'end' asParser not, endOfLine negate plus, endOfLine
 ]
 
@@ -104,11 +99,6 @@ PPEsopeGrammar >> pointerName [
 	^ identifier, $. asParser, identifier
 ]
 
-{ #category : #tokens }
-PPEsopeGrammar >> rpar [
-	^ $) asParser 
-]
-
 { #category : #grammar }
 PPEsopeGrammar >> segIdentifier [
 	^ endOfLine negate plus
@@ -116,6 +106,7 @@ PPEsopeGrammar >> segIdentifier [
 
 { #category : #grammar }
 PPEsopeGrammar >> segact [
+	"beginOfLine , spaces, 'segact' asParser, segIdentifier, endOfLine"
 	^ self esopeLine: 'segact'
 ]
 
