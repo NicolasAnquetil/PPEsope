@@ -53,7 +53,7 @@ PPEsopeRewriter >> endOfLine [
 	==> [ :nodes | String streamContents: [ :str | nodes do: [ :c | str nextPut: c ] ] ]
 ]
 
-{ #category : #rules }
+{ #category : #grammar }
 PPEsopeRewriter >> fortranLine [
 	"(lineEnd negate plus) token optional, lineEnd"
 
@@ -62,7 +62,7 @@ PPEsopeRewriter >> fortranLine [
 			| line |
 			line := ''
 				writeStreamDo: [ :str | 
-					nodes do: [ :node | str << node value ].
+					nodes do: [ :node | str << node parsedValue ].
 					str contents ].
 			(line asLowercase beginsWith: 'c')
 				ifTrue: [ stream << line ]
@@ -115,7 +115,7 @@ PPEsopeRewriter >> output [
 	^ stream contents.
 ]
 
-{ #category : #rules }
+{ #category : #grammar }
 PPEsopeRewriter >> pointer [
 	" beginOfLine, spaces, 'pointeur' asPParser, spaces, pointerName, endOfLine"
 
@@ -134,7 +134,7 @@ PPEsopeRewriter >> processLinesInsideSegment: anOrderedCollection [
 		 ]
 ]
 
-{ #category : #rules }
+{ #category : #grammar }
 PPEsopeRewriter >> segact [
 	"beginOfLine, spaces, 'segact' asPParser, segIdentifier, endOfLine"
 
@@ -144,7 +144,7 @@ PPEsopeRewriter >> segact [
 			]
 ]
 
-{ #category : #rules }
+{ #category : #grammar }
 PPEsopeRewriter >> segadj [
 	"beginOfLine, spaces, 'segadj' asPParser, segIdentifier, endOfLine"
 
@@ -154,7 +154,7 @@ PPEsopeRewriter >> segadj [
 			]
 ]
 
-{ #category : #rules }
+{ #category : #grammar }
 PPEsopeRewriter >> segdef [
 	"beginOfLine, spaces, 'segment' asPParser, segIdentifier, endOfLine,
 	lines,
@@ -170,7 +170,7 @@ PPEsopeRewriter >> segdef [
 		]
 ]
 
-{ #category : #rules }
+{ #category : #grammar }
 PPEsopeRewriter >> segdes [
 	" beginOfLine, spaces, 'segdes' asPParser, segIdentifier, endOfLine"
 
@@ -180,7 +180,7 @@ PPEsopeRewriter >> segdes [
 			]
 ]
 
-{ #category : #rules }
+{ #category : #grammar }
 PPEsopeRewriter >> segini [
 	" beginOfLine, spaces, 'segini' asPParser, segIdentifier, endOfLine"
 
@@ -190,7 +190,7 @@ PPEsopeRewriter >> segini [
 			]
 ]
 
-{ #category : #rules }
+{ #category : #grammar }
 PPEsopeRewriter >> segsup [
 	" beginOfLine , spaces, 'segsup' asPParser, segIdentifier, endOfLine"
 
