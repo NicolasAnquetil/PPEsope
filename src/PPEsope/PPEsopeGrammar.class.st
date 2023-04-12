@@ -39,6 +39,12 @@ PPEsopeGrammar >> beginOfLine [
 	^ '      ' asParser flatten
 ]
 
+{ #category : #tokens }
+PPEsopeGrammar >> dotToken [
+
+	^ self symbol: $.
+]
+
 { #category : #grammar }
 PPEsopeGrammar >> emptyLine [
 	^ spaces , endOfLine
@@ -98,9 +104,21 @@ PPEsopeGrammar >> notEndLine [
 	^ beginOfLine, 'end' asParser not, endOfLine negate plus flatten, endOfLine
 ]
 
+{ #category : #tokens }
+PPEsopeGrammar >> optionalBlanks [
+
+	^ #blank asPParser star flatten
+]
+
 { #category : #grammar }
 PPEsopeGrammar >> pointer [
 	^ beginOfLine, pointerKeyword , spaces, pointerName, endOfLine
+]
+
+{ #category : #tokens }
+PPEsopeGrammar >> pointerKeyWord [
+
+	^ (self terminal: 'pointeur') flatten
 ]
 
 { #category : #tokens }
@@ -162,7 +180,18 @@ PPEsopeGrammar >> spaces [
 	^ (#blank asParser / #tab asParser) star flatten
 ]
 
-{ #category : #accessing }
+{ #category : #grammar }
 PPEsopeGrammar >> start [
 	^ file end
+]
+
+{ #category : #'grammar-helper' }
+PPEsopeGrammar >> symbol: aLetter [
+
+	^ aLetter asPParser
+]
+
+{ #category : #'grammar-helper' }
+PPEsopeGrammar >> terminal: aString [
+	^ aString asPParser caseInsensitive
 ]

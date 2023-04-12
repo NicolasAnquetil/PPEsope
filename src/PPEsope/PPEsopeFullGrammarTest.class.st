@@ -10,6 +10,7 @@ Class {
 
 { #category : #running }
 PPEsopeFullGrammarTest >> parserClass [
+
 	^ PPEsopeGrammar
 ]
 

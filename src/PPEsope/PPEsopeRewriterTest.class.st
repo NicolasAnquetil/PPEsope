@@ -93,7 +93,7 @@ C PROPRIETE: lstg >= 0
 C
       integer lstg
 cESO  segment string
-cESO    character cstg*(lstg)
+        character cstg*(lstg)
 cESO  endsegment
 C
 C nlist : capacite de la liste
@@ -103,8 +103,8 @@ C PROPRIETE: 0<= ilist <= nlist
 C
       integer nlist
 cESO  segment,list
-cESO    integer ilist
-cESO    integer elist(nlist)
+        integer ilist
+        integer elist(nlist)
 cESO  endsegment
 C
 cESO  pointeur alist.list
@@ -298,7 +298,7 @@ PPEsopeRewriterTest >> testFortranLineEsoAt [
 '
 ]
 
-{ #category : #accessing }
+{ #category : #tests }
 PPEsopeRewriterTest >> testFortranLineEsoSlash [
 	self
 		parse:
@@ -312,12 +312,32 @@ PPEsopeRewriterTest >> testFortranLineEsoSlash [
 '
 ]
 
+{ #category : #tests }
+PPEsopeRewriterTest >> testFortranLineNoEsoAt [
+
+	self
+		parse: sixSpaces , 'call newbook(lib,''le petit chaperon rouge'',10,2.12)
+'
+		rule: #fortranLine.
+	self assert: parser output equals: '      call newbook(lib,''le petit chaperon rouge'',10,2.12)
+'
+]
+
 { #category : #accessing }
 PPEsopeRewriterTest >> testPointer [
 	| sourcecode |
 	sourcecode := 'pointeur splist.list
 '.
 	self parse: sixSpaces, sourcecode rule: #pointer.
+	self assert: parser output equals: 'cESO  ' , sourcecode
+]
+
+{ #category : #tests }
+PPEsopeRewriterTest >> testPointerWithSpaces [
+	| sourcecode |
+	sourcecode := '   pointeur t1.mytab    
+'.
+	self parse: '      ' , sourcecode rule: #pointer.
 	self assert: parser output equals: 'cESO  ' , sourcecode
 ]
 
@@ -349,7 +369,7 @@ PPEsopeRewriterTest >> testSegadj [
 	self assert: parser output equals: 'cESO  ' , sourcecode
 ]
 
-{ #category : #accessing }
+{ #category : #tests }
 PPEsopeRewriterTest >> testSegdef [
 	| finalcode sourcecode |
 	sourcecode := '      segment,values
@@ -359,13 +379,49 @@ PPEsopeRewriterTest >> testSegdef [
       endsegment
 '.
 	finalcode := 'cESO  segment,values
-cESO    character*8        valtyp
-cESO    real               valf(valnf)
-cESO    integer            vale(valne)
+        character*8        valtyp
+        real               valf(valnf)
+        integer            vale(valne)
 cESO  endsegment
 '.
 	self parse: sourcecode rule: #segdef.
-	self assert: parser output equals: finalcode.
+	self assert: (parser outputForSegment) equals: finalcode.
+]
+
+{ #category : #tests }
+PPEsopeRewriterTest >> testSegdefFromBorbk [
+
+	| rewriterdCode inputCode |
+	inputCode := '      SEGMENT , pstr
+        character*8 nomcod, date, heure, typseg(nbseg), typref(nbref)
+        integer     ibseg, ibref,        pntseg(nbseg), pntref(nbref)
+      endsegment
+'.
+	rewriterdCode := 'cESO  SEGMENT , pstr
+        character*8 nomcod, date, heure, typseg(nbseg), typref(nbref)
+        integer     ibseg, ibref,        pntseg(nbseg), pntref(nbref)
+cESO  endsegment
+'.
+	self parse: inputCode rule: #segdef.
+	self assert: parser outputForSegment equals: rewriterdCode
+]
+
+{ #category : #tests }
+PPEsopeRewriterTest >> testSegdefUpperCase [
+
+	| rewriterdCode inputCode |
+	inputCode := '      SEGMENT , PSTR
+        character*8 nomcod, date, heure, typseg(nbseg), typref(nbref)
+        integer     ibseg, ibref,        pntseg(nbseg), pntref(nbref)
+      endsegment
+'.
+	rewriterdCode := 'cESO  SEGMENT , PSTR
+        character*8 nomcod, date, heure, typseg(nbseg), typref(nbref)
+        integer     ibseg, ibref,        pntseg(nbseg), pntref(nbref)
+cESO  endsegment
+'.
+	self parse: inputCode rule: #segdef.
+	self assert: parser outputForSegment equals: rewriterdCode
 ]
 
 { #category : #accessing }
@@ -395,13 +451,14 @@ PPEsopeRewriterTest >> testSegsup [
 	self assert: parser output equals: 'cESO  ' , sourcecode
 ]
 
-{ #category : #accessing }
+{ #category : #tests }
 PPEsopeRewriterTest >> testSmallFile [
+
 	self parse: self class esopeSmallFile rule: #start.
 	self assert: parser output equals: self class esopeSmallFileProcessed
 ]
 
-{ #category : #accessing }
+{ #category : #tests }
 PPEsopeRewriterTest >> testTranslateEsopeArray [
 	self
 		assert:
@@ -409,14 +466,23 @@ PPEsopeRewriterTest >> testTranslateEsopeArray [
 		equals: 'ESOar(ESOat(ab,cd),ef)'
 ]
 
-{ #category : #accessing }
+{ #category : #tests }
+PPEsopeRewriterTest >> testTranslateEsopeArrayAndEsopeAtWithExpressionAsSubscript [
+
+		self
+		assert:
+			(parser translateEsopeAt: (parser translateEsopeArray: 'ur.ubb(jr + 1)'))
+		equals: 'ESOar(ESOat(ur,ubb),jr + 1)'
+]
+
+{ #category : #tests }
 PPEsopeRewriterTest >> testTranslateEsopeArrayDotInsidePar [
 	self
 		assert: (parser translateEsopeAt: (parser translateEsopeArray: 'rlist.elist(rlist.ilist)=ms'))
 		equals: 'ESOar(ESOat(rlist,elist),ESOat(rlist,ilist))=ms'
 ]
 
-{ #category : #accessing }
+{ #category : #tests }
 PPEsopeRewriterTest >> testTranslateEsopeAtBinaryOperator [
 	self
 		assert: (parser translateEsopeAt: '         if(lxs.eq.0)then')
@@ -428,31 +494,31 @@ PPEsopeRewriterTest >> testTranslateEsopeAtBinaryOperator [
 		equals: '              if((ESOat(rlist,ilist)).gt.nlist)then'
 ]
 
-{ #category : #accessing }
+{ #category : #tests }
 PPEsopeRewriterTest >> testTranslateEsopeAtEqOperator [
 	self assert: (parser translateEsopeAt: '         if(lxs.eq.0)then') equals: '         if(lxs.eq.0)then'
 ]
 
-{ #category : #accessing }
+{ #category : #tests }
 PPEsopeRewriterTest >> testTranslateEsopeAtNoDot [
 	self assert: (parser translateEsopeAt: 'abc') equals: 'abc'
 ]
 
-{ #category : #accessing }
+{ #category : #tests }
 PPEsopeRewriterTest >> testTranslateEsopeAtOneDot [
 	self
 		assert: (parser translateEsopeAt: 'abc.def')
 		equals: 'ESOat(abc,def)'
 ]
 
-{ #category : #accessing }
+{ #category : #tests }
 PPEsopeRewriterTest >> testTranslateEsopeAtTwoDots [
 	self
 		assert: (parser translateEsopeAt: 'abc.def=opq.xyz')
 		equals: 'ESOat(abc,def)=ESOat(opq,xyz)'
 ]
 
-{ #category : #accessing }
+{ #category : #tests }
 PPEsopeRewriterTest >> testTranslateEsopeSlashEsopeAt [
 	self
 		assert:
@@ -462,21 +528,21 @@ PPEsopeRewriterTest >> testTranslateEsopeSlashEsopeAt [
 		equals: 'ESOsl(ESOat(abc,def),1)'
 ]
 
-{ #category : #accessing }
+{ #category : #tests }
 PPEsopeRewriterTest >> testTranslateEsopeSlashNone [
 	self
 		assert: (parser translateEsopeSlash: 'abc.def')
 		equals: 'abc.def'
 ]
 
-{ #category : #accessing }
+{ #category : #tests }
 PPEsopeRewriterTest >> testTranslateEsopeSlashOne [
 	self
 		assert: (parser translateEsopeSlash: 'abc.def(/1)')
 		equals: 'ESOsl(abc.def,1)'
 ]
 
-{ #category : #accessing }
+{ #category : #tests }
 PPEsopeRewriterTest >> testTranslateEsopeSlashSlash [
 	self
 		assert: (parser translateEsopeAt: 'C     //fin repeter "decouper chaque chaine"')

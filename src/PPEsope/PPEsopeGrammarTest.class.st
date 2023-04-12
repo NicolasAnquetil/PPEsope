@@ -813,8 +813,11 @@ PPEsopeGrammarTest >> testFortranLine [
 
 { #category : #tests }
 PPEsopeGrammarTest >> testFortranLineEmpty [
-	self parse: '
-' rule: #fortranLine.
+
+	self
+		parse: '
+'
+		rule: #fortranLine
 ]
 
 { #category : #tests }
@@ -868,10 +871,28 @@ PPEsopeGrammarTest >> testNotEndLine [
 ]
 
 { #category : #tests }
+PPEsopeGrammarTest >> testOptionalBlanks [
+
+	self parse: '     ' rule: #optionalBlanks.
+
+
+	self parse: '' rule: #optionalBlanks
+]
+
+{ #category : #tests }
 PPEsopeGrammarTest >> testPointer [
 	self parse: sixSpaces, 'pointeur splist.list
 ' rule: #pointer.
 	self fail: 'pointeur splist.list' rule: #pointer.
+]
+
+{ #category : #tests }
+PPEsopeGrammarTest >> testPointerExtraSpaces [
+
+	self
+		parse: '         pointeur splist.list  
+'
+		rule: #pointer
 ]
 
 { #category : #tests }
@@ -919,13 +940,12 @@ PPEsopeGrammarTest >> testSegdef [
       endsegment
 '.
 	self parse: segment rule: #segdef.
-
 	segment := '      segment string
         character cstg*(lstg)
       endsegment
 '.
 	self parse: segment rule: #segdef.
-	
+
 	self fail: '      segment,values' rule: #segdef
 ]
 
@@ -973,5 +993,6 @@ PPEsopeGrammarTest >> testSpaces [
 
 { #category : #tests }
 PPEsopeGrammarTest >> testStart [
+
 	self parse: self class esopeSmallFile
 ]
